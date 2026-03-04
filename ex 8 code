@@ -1,0 +1,38 @@
+# Importing the required libraries and packages
+import numpy as np
+from scipy import stats
+
+# Sample Size
+N = 10
+
+# Gaussian distributed data with mean = 2 and variance = 1
+x = np.random.randn(N) + 2
+
+# Gaussian distributed data with mean = 0 and variance = 1
+y = np.random.randn(N)
+
+# Calculating the variance (sample variance, ddof=1)
+var_x = x.var(ddof=1)
+var_y = y.var(ddof=1)
+
+# Pooled Standard Deviation
+SD = np.sqrt((var_x + var_y) / 2)
+print("Standard Deviation:", SD)
+
+# Calculating the t-statistic (independent samples t-test)
+tval = (x.mean() - y.mean()) / (SD * np.sqrt(2 / N))
+
+# Degrees of freedom
+dof = 2 * N - 2
+
+# Two-tailed p-value
+pval = 2 * (1 - stats.t.cdf(abs(tval), df=dof))
+
+print("t =", tval)
+print("p =", pval)
+
+# Cross-check using SciPy's built-in function
+tval2, pval2 = stats.ttest_ind(x, y)
+
+print("t (scipy) =", tval2)
+print("p (scipy) =", pval2)
