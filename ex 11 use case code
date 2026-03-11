@@ -1,0 +1,67 @@
+import numpy as np
+import pandas as pd
+import seaborn as sb
+import matplotlib.pyplot as plt
+
+from sklearn import preprocessing
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# Correct dataset URL
+url = "https://raw.githubusercontent.com/BigDataGal/Python-for-Data-Science/master/titanic-train.csv"
+
+# Load dataset
+titanic = pd.read_csv(url)
+
+# Rename columns
+titanic.columns = ['PassengerId','Survived','Pclass','Name','Sex','Age','SibSp',
+                   'Parch','Ticket','Fare','Cabin','Embarked']
+
+print("First 5 rows:\n")
+print(titanic.head())
+
+# Visualization
+sb.countplot(x='Survived', data=titanic, palette='hls')
+plt.title("Survival Count")
+plt.show()
+
+# Check missing values
+print("\nMissing values:\n")
+print(titanic.isnull().sum())
+
+# Handle missing values
+titanic['Age'].fillna(titanic['Age'].mean(), inplace=True)
+titanic['Embarked'].fillna(titanic['Embarked'].mode()[0], inplace=True)
+
+# Drop Cabin column (too many missing values)
+titanic.drop(['Cabin'], axis=1, inplace=True)
+
+# Convert categorical variables to numeric
+label_encoder = preprocessing.LabelEncoder()
+titanic['Sex'] = label_encoder.fit_transform(titanic['Sex'])
+titanic['Embarked'] = label_encoder.fit_transform(titanic['Embarked'])
+
+# Select features and target
+X = titanic[['Pclass','Sex','Age','SibSp','Parch','Fare','Embarked']]
+y = titanic['Survived']
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=10
+)
+
+print("\nTraining size:", len(X_train))
+print("Testing size:", len(X_test))
+
+# Train model
+model = LogisticRegression(max_iter=200)
+model.fit(X_train, y_train)
+
+# Prediction
+y_pred = model.predict(X_test)
+
+# Evaluation
+print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+print("Accuracy Score:", accuracy_score(y_test, y_pred))
