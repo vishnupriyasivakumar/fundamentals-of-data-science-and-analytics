@@ -1,0 +1,17 @@
+import pandas as pd
+import seaborn as sb
+import matplotlib.pyplot as plt
+
+# Load dataset
+url = "https://raw.githubusercontent.com/BigDataGal/Python-for-Data-Science/master/titanic-train.csv"
+titanic = pd.read_csv(url)
+
+# First 5 rows
+print(titanic.head())
+
+# Missing values
+print(titanic.isnull().sum())
+
+# Survival count plot
+sb.countplot(x='Survived', data=titanic)
+plt.show()
